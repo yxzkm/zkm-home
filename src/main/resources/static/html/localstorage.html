@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Html5 Local Storage Test</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+</head>
+<body>
+<span>写入local storage: </span> 
+<input id="text" type="text" />
+<button onclick="save()">写入local storage</button>
+<button onclick="read()">从local storage读出数据</button>
+<div id="message"></div>
+</body>
+<script type="text/javascript">
+function save(){
+    var text = document.getElementById('text').value;
+    localStorage.text=text;
+}
+function read(){
+    var text = localStorage.text;
+    localStorage.text=text;
+    document.getElementById('message').innerHTML = text;
+}
+</script>
+</html>

@@ -1,0 +1,47 @@
+http:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+
+#自定义的属性和值
+myYml:
+  simpleProp: simplePropValue张克猛
+  arrayProps: 1,2,3,4,5
+  listProp1:
+    - name: abc
+      value: abcValue
+    - name: efg
+      value: efgValue
+  listProp2:
+    - config2Value1
+    - config2Vavlue2
+  mapProps:
+    key1: value1
+    key2: value2
+    
+    
+    
+spring:
+    datasource:
+        name: test
+        url: jdbc:mysql://127.0.0.1:3306/ssodemo
+        username: root
+        password: zkm@aisino
+        # 使用druid数据源
+        type: org.apache.tomcat.jdbc.pool.DataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: stat
+        maxActive: 20
+        initialSize: 1
+        maxWait: 60000
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20

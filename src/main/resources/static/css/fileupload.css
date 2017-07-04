@@ -1,0 +1,197 @@
+/******************************
+以下是默认样式
+*******************************/
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	-ms-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+body {
+	line-height: 1.6;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background-color: #f1f0f6;
+}
+
+
+/******************************
+以下是各种外框样式
+*******************************/
+
+/*最外层的外框*/
+.outterBox {    
+	margin: 15px;
+}
+
+/*垂直方向上的外框，上下堆叠，宽度与最外框等宽*/
+.vBox {   
+	margin: 15px 0;
+}
+
+h3 {
+	margin-top: 16px;
+	font-size: 16px;
+	font-weight: 400;
+	color: #3e3e3e;
+	position: relative;
+}
+
+.btn {
+	margin-left: 3px;
+	margin-right: 3px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	
+	width: 100%;
+	border: 0;
+	outline: 0;
+	-webkit-appearance: none;
+	position: relative;
+	display: block;
+	padding-left: 14px;
+	padding-right: 14px;
+	font-family: inherit;
+	font-size: 18px;
+	text-align: center;
+	text-decoration: none;
+	overflow: visible;
+	height: 42px;
+	border-radius: 5px;
+	box-sizing: border-box;
+	color: #ffffff;
+	line-height: 42px;
+	background-color: #04be02;
+}
+
+/******************************
+以下是通用样式
+*******************************/
+.hidden{
+	display:none;
+}
+/******************************
+以下是文件选择样式
+*******************************/
+.picSelectDiv{
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin-top: 20px;
+}
+.picSelectDiv .file-uploader{
+    position: relative;
+    width: 150px;
+    height: 150px;
+    filter : alpha(opacity = 0); /*兼容IE:透明度*/
+    opacity: 0;  /*让input文件选择控件完全透明看不见*/
+    z-index: 2;  /*让文件选择控件处于最高层，用于触发*/
+    cursor: pointer;
+}
+.file-uploader-wrap-fake{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    height: 150px;
+}
+.picSelectImg{
+    width: 150px;
+    height: 150px;
+}
+
+/******************************
+以下是图片预览样式
+*******************************/
+.picPreviewDiv {
+	display: flex;
+	list-style: none;
+	flex-flow:row wrap;
+	justify-content: flex-start;
+	
+	padding: 0;
+	margin: 0;
+}
+
+.picPreviewImgBox {
+	margin: 5px 3px 5px 3px;
+			
+	line-height: 90px;
+	background:#fff url(/img/ok.png) no-repeat right bottom;
+	padding: 0px;
+	width: 90px;
+	height: 90px;
+}
+
+.picPreviewImg{
+    width: 90px;
+    height: 90px;
+	opacity:1.0;
+}
+
+.picPreviewImgUploadOK{
+    width: 90px;
+    height: 90px;
+	opacity:0.5;
+}
+
+/******************************
+以下是给图片添加标签的样式
+*******************************/
+.btn-label {
+	border: 0;
+	outline: 0;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	padding-left: 14px;
+	padding-right: 14px;
+	font-family: inherit;
+	font-size: 18px;
+	text-align: center;
+	text-decoration: none;
+	overflow: visible;
+	height: 42px;
+	border-radius: 5px;
+	color: #ffffff;
+	line-height: 42px;
+	background-color: #040002;
+}
+
+ul {
+	display: flex;
+	list-style: none;
+	flex-flow:row wrap;
+	justify-content: flex-start;
+	
+	margin:0;
+	padding:0;
+	border-radius:5px;
+	list-style:none;
+	background-color:#eee;
+}
+
+li{
+	height:25px;
+	margin:5px;
+	padding:10px;
+	border-radius:5px;
+	background:#aaa;
+	text-align:center;
+}
+
+#labelInput{
+	width:100%;
+	font-family: inherit;
+	font-size: 18px;
+	text-align: left;
+	text-decoration: none;
+
+}
+	

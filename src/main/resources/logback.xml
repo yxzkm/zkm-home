@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="false" scanPeriod="60 seconds">
+    
+    <!-- 关于logback的更多介绍，请参考原创文章： http://aub.iteye.com/blog/1103685  -->
+    
+	<property name="APP_NAME" value="zkm-weixin" />   
+	<contextName>${APP_NAME}</contextName>  
+	<timestamp key="bySecond" datePattern="MM-dd HH:mm:ss"/>   
+
+    <!-- 
+    	appender简介：
+    		具体描述如何来写日志的节点。最常用的有三类：ConsoleAppender、FileAppender、RollingFileAppender
+    	appender属性详解：
+    		name属性：自定义名称。 
+    		class属性：指定类名。
+    	appender子节点详解：
+    		encoder子节点：将日志信息输出的节点，其内部的pattern子节点指定输出格式。
+    -->
+
+    <!-- 
+    	ConsoleAppender简介：无特殊特性
+    -->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">  
+        <encoder>  
+            <charset>UTF-8</charset>  
+            <pattern>[%d{MM-dd HH:mm:ss}][%p][%logger{0}:%line] - %m%n</pattern>  
+        </encoder>  
+    </appender>
+    
+    <!-- 
+    	FileAppender简介：
+    		把日志添加到文件。
+    	FileAppender特殊子节点详解：
+    		file子节点：日志文件名，相对路径绝对路径均可，如果上级目录不存在会自动创建，没有默认值。 
+    		append子节点：如果是 true，日志被追加到文件结尾，如果是 false，清空现存文件，默认是true。
+    -->
+	<appender name="logFile" class="ch.qos.logback.core.FileAppender">   
+		<file>logFile.log</file>
+		<append>true</append>  
+		<encoder>   
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>   
+		</encoder>   
+	</appender>   
+
+    <!-- 
+    	RollingFileAppender简介：
+    		先将日志记录到指定文件，当符合某个条件时，将日志数据迁移到其他文件。
+    	RollingFileAppender特殊子节点详解：
+    		triggeringPolicy子节点：定义日志滚动的触发条件。一般为时间触发或文件大小触发。
+    		rollingPolicy子节点:当触发条件满足时，决定如何滚动。涉及文件移动和重命名。
+    -->
+	<appender name="rollingFileBaseTime" class="ch.qos.logback.core.rolling.RollingFileAppender">   
+		<file>rollingFileBaseTime.log</file>  
+		<append>true</append>  
+		   
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">   
+			<fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>   
+			<maxHistory>30</maxHistory>    
+		</rollingPolicy>   
+		
+		<encoder>   
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>   
+		</encoder>   
+	</appender>   
+
+	<appender name="rollingFileBaseSize" class="ch.qos.logback.core.rolling.RollingFileAppender">   
+		<file>rollingFileBaseSize.log</file>  
+		<append>true</append>  
+		   
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">   
+			<fileNamePattern>logFile.%i.log</fileNamePattern>   
+			<minIndex>1</minIndex>   
+			<maxIndex>10</maxIndex>   
+		</rollingPolicy>   
+		
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">   
+			<maxFileSize>10MB</maxFileSize>   
+		</triggeringPolicy>   
+		
+		<encoder>   
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>   
+		</encoder>   
+	</appender>   
+
+
+    <!-- 
+    	logger简介：
+    		用来设置某个包或类的打印级别和appender。
+    	logger属性详解：
+    		name属性：用来指定受此logger约束的某一个包或者具体的某一个类。 
+    		level属性：设置打印级别，默认继承上级的级别。
+    		addtivity属性：是否向上级loger传递打印信息，默认是true。
+    	logger子节点详解：
+    		appender-ref子节点：可以包含多个，用于引用appender节点
+    -->
+    <logger level="info" name="com.zhangkm.weixin">  
+        <appender-ref ref="rollingFileBaseSize" />  
+    </logger>  
+    
+    <!-- 
+    	root简介：
+    		也是一个logger节点，但它是根logger节点，只有一个level属性
+    	root属性详解：
+    		level属性：设置打印级别，默认继承上级的级别。
+    	root子节点详解：
+    		appender-ref子节点：可以包含多个，用于引用appender节点
+    -->
+    <root level="info">  
+        <appender-ref ref="stdout" />  
+    </root>  
+
+</configuration>

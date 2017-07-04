@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+<title>Upload Files using XMLHttpRequest - Minimal</title>
+<link rel="stylesheet" href="/css/fileupload.css">
+
+</head>
+<body>
+<div class="outterBox">
+
+<div class="vBox" id="picSelectBox">
+	<h3 id="menu-basic">请选择要上传的照片...</h3>
+	<div class="picSelectDiv">
+		<input id="fileToUpload" class="file-uploader" 
+			type="file" name="fileToUpload" multiple="multiple" 
+			onchange="loadImageFile();" />
+		<div class="file-uploader-wrap-fake">
+			<img class="picSelectImg" src="/img/wenhao.png" />
+		</div>
+	</div>
+</div>
+
+<div class="vBox hidden" id="picPreviewBox" >
+	<h3 id="menu-basic">以下是您选择的照片...</h3>
+	<div class="picPreviewDiv" id="picPreviewDiv">
+	</div>
+	<div id="picUploadButtonDiv" class="hidden">
+		<button class="btn" type="button" onclick="uploadFile();" >上传...</button> 
+		<span class="desc" id="progressNumber"></span>
+	</div>
+</div>
+
+</div>
+<template id="mytemp">
+<li issubmit="yes" onclick="moveLabel(this);" >标签</li> 
+</template>
+
+</body>
+<script src="/js/fileupload.js" ></script>
+</html>
