@@ -174,6 +174,7 @@ function submitLabelsAjax(){
 	xhr.onreadystatechange=function(){
 		if (xhr.readyState==4 && xhr.status==200){
 			picLabelButtonDiv.innerHTML = "OK,照片处理完毕！\n"+xhr.responseText;
+			window.location="./photos.html";
 		}
 	}
 	xhr.open("POST","/fileUpload/submitLabels",true);
