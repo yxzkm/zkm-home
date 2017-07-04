@@ -139,42 +139,6 @@ public class FileUploadAction {
 		
 	}
 	
-    private boolean createDir(String destDirName) {  
-        File dir = new File(destDirName);  
-        if (dir.exists()) {  
-            logger.info("创建目录" + destDirName + "，目标目录已经存在");  
-            return true;  
-        }  
-        if (!destDirName.endsWith(File.separator)) {  
-            destDirName = destDirName + File.separator;  
-        }  
-        //创建目录  
-        if (dir.mkdirs()) {  
-            logger.info("创建目录" + destDirName + "成功！");  
-            return true;  
-        } else {  
-            logger.info("创建目录" + destDirName + "失败！");  
-            return false;  
-        }  
-    }  
-
-	/**
-	 * 删除文件夹
-	 * @param destDirName
-	 */
-    private void deleteDir(String destDirName) {  
-        File dir = new File(destDirName);  
-        if (!dir.exists()) {  
-            logger.info("删除目录：{} 失败，目录不存在", destDirName);  
-            return;  
-        }
-        for(File file : dir.listFiles()){
-        	file.delete();
-        }
-        dir.delete();
-    }  
-
-	
 	/**
 	 * 获取本次上传图片的批次代码
 	 * 因为是多张图片异步上传，必须保证全部图片上传完毕之后，再提交标签并最终传到七牛服务器，
@@ -205,6 +169,14 @@ public class FileUploadAction {
 	@ResponseBody
     public List<Map<String,Object>> getHotLabels() {
         return redisService.getHotLabels(0);  
+    }  
+
+    @RequestMapping(
+    		method = RequestMethod.GET, 
+    		value="/getLatestTop9Photos")
+	@ResponseBody
+    public List<Map<String,Object>> getLatestTop9Photos() {
+        return redisService.getLatestTop9Photos();  
     }  
 
     /*
@@ -313,34 +285,6 @@ public class FileUploadAction {
 		return new ReturnData(0);  
     }  
     
-    private String getPostStringFromRequest(HttpServletRequest request){
-    	InputStream inputStream = null;
-		ByteArrayOutputStream baos = null;
-		try {
-			inputStream = request.getInputStream();
-			baos = new ByteArrayOutputStream();
-			int i = -1;
-			while ((i = inputStream.read()) != -1) {
-				baos.write(i);
-			}
-			return baos.toString();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return null;
-		} finally {
-			try {
-				inputStream.close();
-			} catch (IOException e2) {
-				e2.printStackTrace();
-			}
-			try {
-				baos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-    }
-
     /**
      * 多文件上传
      * 注意html中form和input的写法，input的name为：filesSelected，要和后端对应
@@ -386,6 +330,34 @@ public class FileUploadAction {
    		return new ReturnData(0);
    	}
 
+    private String getPostStringFromRequest(HttpServletRequest request){
+    	InputStream inputStream = null;
+		ByteArrayOutputStream baos = null;
+		try {
+			inputStream = request.getInputStream();
+			baos = new ByteArrayOutputStream();
+			int i = -1;
+			while ((i = inputStream.read()) != -1) {
+				baos.write(i);
+			}
+			return baos.toString();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return null;
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			try {
+				baos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+    }
+
     
     private void saveSquareThumbnail(String imgFullFileName) {
 		try {
@@ -422,5 +394,41 @@ public class FileUploadAction {
 		return result;
 	}
 
+    private boolean createDir(String destDirName) {  
+        File dir = new File(destDirName);  
+        if (dir.exists()) {  
+            logger.info("创建目录" + destDirName + "，目标目录已经存在");  
+            return true;  
+        }  
+        if (!destDirName.endsWith(File.separator)) {  
+            destDirName = destDirName + File.separator;  
+        }  
+        //创建目录  
+        if (dir.mkdirs()) {  
+            logger.info("创建目录" + destDirName + "成功！");  
+            return true;  
+        } else {  
+            logger.info("创建目录" + destDirName + "失败！");  
+            return false;  
+        }  
+    }  
+
+	/**
+	 * 删除文件夹
+	 * @param destDirName
+	 */
+    private void deleteDir(String destDirName) {  
+        File dir = new File(destDirName);  
+        if (!dir.exists()) {  
+            logger.info("删除目录：{} 失败，目录不存在", destDirName);  
+            return;  
+        }
+        for(File file : dir.listFiles()){
+        	file.delete();
+        }
+        dir.delete();
+    }  
+
+	
 
 }

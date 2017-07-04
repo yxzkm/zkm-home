@@ -7,23 +7,10 @@
 <link rel="stylesheet" href="/css/fileupload.css">
 
 </head>
-<body>
+<body onload="dothis()">
 <div class="outterBox">
 
-<div class="vBox" id="picSelectBox">
-	<h3 id="menu-basic">请选择要上传的照片...</h3>
-	<div class="picSelectDiv">
-		<input id="fileToUpload" class="file-uploader" 
-			type="file" name="fileToUpload" multiple="multiple" 
-			onchange="loadImageFile();" />
-		<div class="file-uploader-wrap-fake">
-			<img class="picSelectImg" src="/img/wenhao.png" />
-		</div>
-	</div>
-</div>
-
-<div class="vBox hidden" id="picPreviewBox" >
-	<h3 id="menu-basic">以下是您选择的照片...</h3>
+<div class="vBox" id="picPreviewBox" >
 	<div class="picPreviewDiv" id="picPreviewDiv">
 	</div>
 	<div id="picUploadButtonDiv" class="hidden">
@@ -38,5 +25,5 @@
 </template>
 
 </body>
-<script src="/js/fileupload.js" ></script>
+<script src="/js/photos.js" ></script>
 </html>

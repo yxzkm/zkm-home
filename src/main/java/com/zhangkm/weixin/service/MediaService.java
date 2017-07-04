@@ -38,9 +38,10 @@ public class MediaService {
     	try {
 			// 调用put方法上传
 			Response res = uploadManager.put(imgFullFileName, qiniuFileName, auth.uploadToken(QINIU_BUCKET_NAME));
-			//String authUrl = auth.privateDownloadUrl("http://pic.zhangkm.com/" + qiniuFileName);
-			
 			if(res.statusCode!=200) return false;
+
+			String authUrl = auth.privateDownloadUrl("http://pic.zhangkm.com/" + qiniuFileName);
+			logger.info("authUrl: {}",authUrl);
 			return true;
 			
 		} catch (QiniuException e) {

@@ -44,7 +44,7 @@ public class RedisService {
 	 * @return
 	 */
 	public List<Map<String,Object>> getLatestTop9Photos(){
-		return redisDao.zRange(PHOTOS_ZSET, 0, 9);
+		return redisDao.zRange(PHOTOS_ZSET, 0, 8);
 	}
 	
 	/**
