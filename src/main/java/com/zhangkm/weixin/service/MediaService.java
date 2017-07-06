@@ -40,20 +40,20 @@ public class MediaService {
 			Response res = uploadManager.put(imgFullFileName, qiniuFileName, auth.uploadToken(QINIU_BUCKET_NAME));
 			if(res.statusCode!=200) return false;
 
-			String authUrl = auth.privateDownloadUrl("http://pic.zhangkm.com/" + qiniuFileName);
-			logger.info("authUrl: {}",authUrl);
+			//String authUrl = auth.privateDownloadUrl("http://pic.zhangkm.com/" + qiniuFileName);
 			return true;
 			
 		} catch (QiniuException e) {
 			Response r = e.response;
 			// 请求失败时打印的异常的信息
-			System.out.println(r.toString());
+			logger.error("错误1："+r.toString());
 			try {
-				// 响应的文本信息
-				System.out.println(r.bodyString());
+				logger.error("错误2："+r.bodyString());
 			} catch (QiniuException e1) {
 				// ignore
 			}
+		} catch (Exception e) {
+			logger.error("错误0："+e.getMessage());
 		}
 		return false;
     }  

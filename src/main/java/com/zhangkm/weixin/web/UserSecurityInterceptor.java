@@ -122,7 +122,7 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
         try {
             HttpGet httpget = new HttpGet(chenckTicketUrl);
 
-            logger.debug("Executing request " + httpget.getRequestLine());
+            logger.info("Executing request " + httpget.getRequestLine());
 
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {

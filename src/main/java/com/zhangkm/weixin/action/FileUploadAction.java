@@ -240,26 +240,47 @@ public class FileUploadAction {
 			String newFileName = shootTime + "_" + shortFingerPrint + labelString + ".jpg";
 			String finalFullPathFileName = directory.getPath() + "/" + newFileName;
 			File file = new File(tempFullPathFileName);
-			if(!file.renameTo(new File(finalFullPathFileName))) continue;
+			if(!file.renameTo(new File(finalFullPathFileName))) {
+				logger.error("文件改名失败： 从文件[{}]改名到[{}]失败 ",
+						tempFullPathFileName,finalFullPathFileName);
+				continue;	
+			}
 			
 			//生成正方形的缩略图
-			saveSquareThumbnail(finalFullPathFileName);
+			if(!saveSquareThumbnail(finalFullPathFileName)){
+				logger.error("生成缩略图失败：[{}]",finalFullPathFileName);
+				continue;
+			} ;
 			
 			//上传大图到七牛服务器
-			if(mediaService.uploadImgFileToQiniu(finalFullPathFileName,newFileName)){
+			if(!mediaService.uploadImgFileToQiniu(finalFullPathFileName,newFileName)){
 
-				//上传七牛成功后，将大图从当前的临时目录，移动到上一级目录，备份
-				File finalFile = new File(finalFullPathFileName);
-				finalFile.renameTo(new File(UPLOAD_FILE_SAVE_PATH + newFileName));
-				
-				//将照片和标签信息写入redis
-				redisService.wirtePhotoInfoToRedis(newFileName,labelList);
-			}else{
 				//TODO: 错误处理，事务回滚. 事物以图片最终成功上传到七牛，并且将标签入库为结束标志
+				logger.error("大图片上传七牛失败：[{}]",finalFullPathFileName);
+				continue;
 			}
+
+			//大图上传七牛成功后，将大图从当前的临时目录，移动到上一级目录，备份
+			File finalFile = new File(finalFullPathFileName);
+			try {
+				if(!finalFile.renameTo(new File(UPLOAD_FILE_SAVE_PATH + newFileName))){
+					logger.error("大图片备份失败：备份目标路径[{}]",UPLOAD_FILE_SAVE_PATH + newFileName);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("大图片备份失败：备份目标路径[{}]",UPLOAD_FILE_SAVE_PATH + newFileName);
+			}
+			
 		
 			//上传缩略图到七牛服务器
-			mediaService.uploadImgFileToQiniu(finalFullPathFileName+THUMBNAIL_SUFFIX,newFileName+THUMBNAIL_SUFFIX);
+			if(!mediaService.uploadImgFileToQiniu(finalFullPathFileName+THUMBNAIL_SUFFIX,newFileName+THUMBNAIL_SUFFIX)){
+				logger.error("缩略图上传七牛失败：[{}]",finalFullPathFileName);
+				continue;
+			}
+			
+			//将照片和标签信息写入redis
+			redisService.wirtePhotoInfoToRedis(newFileName,labelList);
+
 			logger.info("文件处理完毕： {}", newFileName);
 		
 		}
@@ -304,8 +325,8 @@ public class FileUploadAction {
 
    			if (file.isEmpty()) return new ReturnData(-1);
     			
-   			logger.debug("MultipartFile.getName():"+file.getName());
-   			logger.debug("MultipartFile.getOriginalFilename():"+file.getOriginalFilename());
+   			logger.info("MultipartFile.getName():"+file.getName());
+   			logger.info("MultipartFile.getOriginalFilename():"+file.getOriginalFilename());
    			
 			String serverFullFileName = UPLOAD_FILE_SAVE_PATH + UUID.randomUUID().toString() + ".jpg";
 
@@ -359,7 +380,7 @@ public class FileUploadAction {
     }
 
     
-    private void saveSquareThumbnail(String imgFullFileName) {
+    private boolean saveSquareThumbnail(String imgFullFileName) {
 		try {
 			Builder<File> b = Thumbnails.of(imgFullFileName).scale(1.0);
 			BufferedImage image = b.asBufferedImage();
@@ -368,8 +389,7 @@ public class FileUploadAction {
 			int width = image.getWidth();
 			
 			// 此时的图片，已经根据EXIF中的方向参数（Orientation），将图片进行了旋转！！！
-			logger.debug("图片高度："+height);
-			logger.debug("图片宽度："+width);
+			logger.info("图片高度："+height);
 			
 			// 判断图片是宽度长还是高度长，然后取窄边长度作为正方形的边长
 			int sideSize = height>width?width:height;
@@ -378,9 +398,10 @@ public class FileUploadAction {
 			b.sourceRegion(Positions.CENTER, sideSize, sideSize)    // 以图片的中心为中心，取边长为sideSize的正方形
 						.height(300)                                // 将上述正方形按比例缩放到边长为300的正方形
 						.toFile(imgFullFileName+THUMBNAIL_SUFFIX);             // 保存图片文件
-			
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}  
 	}
     

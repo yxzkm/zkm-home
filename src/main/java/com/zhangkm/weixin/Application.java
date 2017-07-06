@@ -46,9 +46,9 @@ public class Application extends WebMvcConfigurerAdapter{
     /**
      * 定时任务
      */
-    @Scheduled(fixedRate = 1000 * 600)   // 每600秒执行一次定时任务
+    @Scheduled(fixedRate = 1000 * 60 * 10)   // 每600秒执行一次定时任务
     public void reportCurrentTime() {
-    	logger.debug("现在是定时任务执行时间[{}]",System.currentTimeMillis());
+    	logger.info("现在是定时任务执行时间[{}]",System.currentTimeMillis());
     }
 
     /**
