@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,9 @@ public class FileUploadAction {
 	
     @Value("${myapp.upload.file.save.path}")
     private String UPLOAD_FILE_SAVE_PATH;
+    
+    @Value("${myapp.photo.backup.path}")
+    private String PHOTO_BACKUP_PATH;
     
     //缩略图文件后缀
     private String THUMBNAIL_SUFFIX = "_thumb.jpg"; 
@@ -96,6 +100,8 @@ public class FileUploadAction {
 		}
 		if(bytes==null||bytes.length==0) return new ReturnData(-1);
 
+		logger.info("图片原始的文件名为[{}]",multipartFile.getOriginalFilename());
+		
 		//对文件的二进制流进行hash运算，得出图片文件“指纹”，并将指纹作为文件名。指纹用于图片排重。
 		String fingerPrint = "";
 		try {
@@ -197,6 +203,9 @@ public class FileUploadAction {
 		try {
 			batchCode = postString.split("&")[0].split("=")[1];
 			String labelsString = postString.split("&")[1].split("=")[1];
+			String k = postString.split("&")[2];
+			
+			logger.info("\n\n\n传入随机数参数： {}",k);
 			
 			String[] arr = labelsString.split(",");
 			for(String s : arr){
@@ -209,7 +218,10 @@ public class FileUploadAction {
 		}
 		
 		if(StringUtils.isBlank(batchCode))  return new ReturnData(-1);
-		if(labelList==null || labelList.size()==0)  return new ReturnData(-1);
+		if(labelList==null || labelList.size()==0) {
+			logger.error("没有提交标签");
+			return new ReturnData(-1);
+		} 
 		
 		String labelString = "";
 		for(String s : labelList){
@@ -220,68 +232,73 @@ public class FileUploadAction {
 		File directory = new File( UPLOAD_FILE_SAVE_PATH + batchCode);
 		if(!directory.exists()) return new ReturnData(-1);
 		
-		File flist[] = directory.listFiles();
+		File[] flist = directory.listFiles();
 		if (flist == null || flist.length == 0) return new ReturnData(-1);
 		
 		for (File f : flist) {
 			if (f.isDirectory()) continue;
 			
 			//取得当前文件全路径名称
-			String tempFullPathFileName = f.getAbsolutePath();
+			logger.info("当前文件全路径名是： {}", f.getAbsolutePath());
 			
 			//获取照片拍摄日期
-			String shootTime = metaDataService.getPhotoCreateTimeFromMetaData(tempFullPathFileName);
+			String shootTime = metaDataService.getPhotoCreateTimeFromMetaData(f.getAbsolutePath());
 			if(StringUtils.isBlank(shootTime)) shootTime = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-			
 			//当前图片文件短名称的最前面是图片指纹。取图片指纹的前四位。
 			String shortFingerPrint = f.getName().substring(0, 4);
-			
-			//将文件改名，新的文件名为： 拍摄时间+照片指纹前四位+标签.jpg
-			String newFileName = shootTime + "_" + shortFingerPrint + labelString + ".jpg";
-			String finalFullPathFileName = directory.getPath() + "/" + newFileName;
-			File file = new File(tempFullPathFileName);
-			if(!file.renameTo(new File(finalFullPathFileName))) {
-				logger.error("文件改名失败： 从文件[{}]改名到[{}]失败 ",
-						tempFullPathFileName,finalFullPathFileName);
-				continue;	
+			//组装新文件名： 拍摄时间+照片指纹前四位+标签.jpg
+			String backupFileName = shootTime + "_" + shortFingerPrint + labelString + ".jpg";
+			String httpFileName = shootTime + "_" + shortFingerPrint + ".jpg";
+			logger.info("新的文件名是： [{}]", backupFileName);
+
+			logger.info("正在将大图复制到上一级路径的“photobk”目录下，用于备份...");
+			try {
+				FileUtils.copyFile(f, new File(PHOTO_BACKUP_PATH + backupFileName));
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error("大图片备份失败：备份目标路径[{}]",PHOTO_BACKUP_PATH + backupFileName);
+				continue;
 			}
-			
+
+			logger.info("正在将大图复制到上一级路径，用于http访问...");
+			try {
+				FileUtils.copyFile(f, new File(UPLOAD_FILE_SAVE_PATH + httpFileName));
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error("大图片备份失败：备份目标路径[{}]",UPLOAD_FILE_SAVE_PATH + httpFileName);
+				continue;
+			}
+
+//			//上传大图到七牛服务器
+//			logger.info("正在将大图上传到七牛服务器...");
+//			if(!mediaService.uploadImgFileToQiniu(f.getAbsolutePath(),f.getName())){
+//				//TODO: 错误处理，事务回滚. 事物以图片最终成功上传到七牛，并且将标签入库为结束标志
+//				logger.error("大图片上传七牛失败：[{}]",f.getName());
+//				continue;
+//			}
+
 			//生成正方形的缩略图
-			if(!saveSquareThumbnail(finalFullPathFileName)){
-				logger.error("生成缩略图失败：[{}]",finalFullPathFileName);
+			logger.info("正在生成缩略图...");
+			if(!saveSquareThumbnail(UPLOAD_FILE_SAVE_PATH + httpFileName)){
+				logger.error("生成缩略图失败：[{}]",UPLOAD_FILE_SAVE_PATH + httpFileName);
 				continue;
 			} ;
 			
-			//上传大图到七牛服务器
-			if(!mediaService.uploadImgFileToQiniu(finalFullPathFileName,newFileName)){
-
-				//TODO: 错误处理，事务回滚. 事物以图片最终成功上传到七牛，并且将标签入库为结束标志
-				logger.error("大图片上传七牛失败：[{}]",finalFullPathFileName);
-				continue;
-			}
-
-			//大图上传七牛成功后，将大图从当前的临时目录，移动到上一级目录，备份
-			File finalFile = new File(finalFullPathFileName);
-			try {
-				if(!finalFile.renameTo(new File(UPLOAD_FILE_SAVE_PATH + newFileName))){
-					logger.error("大图片备份失败：备份目标路径[{}]",UPLOAD_FILE_SAVE_PATH + newFileName);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("大图片备份失败：备份目标路径[{}]",UPLOAD_FILE_SAVE_PATH + newFileName);
-			}
-			
-		
-			//上传缩略图到七牛服务器
-			if(!mediaService.uploadImgFileToQiniu(finalFullPathFileName+THUMBNAIL_SUFFIX,newFileName+THUMBNAIL_SUFFIX)){
-				logger.error("缩略图上传七牛失败：[{}]",finalFullPathFileName);
-				continue;
-			}
+//			//上传缩略图到七牛服务器
+//			logger.info("正在将缩略图上传到七牛服务器...");
+//			if(!mediaService.uploadImgFileToQiniu(
+//					f.getAbsolutePath()+THUMBNAIL_SUFFIX,f.getName()+THUMBNAIL_SUFFIX)){
+//				logger.error("缩略图上传七牛失败：[{}]",f.getName()+THUMBNAIL_SUFFIX);
+//				continue;
+//			}
 			
 			//将照片和标签信息写入redis
-			redisService.wirtePhotoInfoToRedis(newFileName,labelList);
+			logger.info("正在将图片和标签元数据写入redis数据库...");
+			redisService.wirtePhotoInfoToRedis(httpFileName,labelList);
 
-			logger.info("文件处理完毕： {}", newFileName);
+			logger.info("文件处理完毕： [{}]，准备删除大图和缩略图...", f.getName());
+			new File(f.getAbsolutePath()+THUMBNAIL_SUFFIX).delete();
+			f.delete();
 		
 		}
 		
@@ -389,8 +406,6 @@ public class FileUploadAction {
 			int width = image.getWidth();
 			
 			// 此时的图片，已经根据EXIF中的方向参数（Orientation），将图片进行了旋转！！！
-			logger.info("图片高度："+height);
-			
 			// 判断图片是宽度长还是高度长，然后取窄边长度作为正方形的边长
 			int sideSize = height>width?width:height;
 

@@ -162,7 +162,9 @@ function getHotLabelListAjax(){
 
 //最终提交标签，后台要上传到七牛，因此比较慢
 function submitLabelsAjax(){
-	var picLabelButtonDiv = document.getElementById("picLabelButtonDiv");
+	//首先将提交按钮置为不可用
+	var btnSubmitLabels = document.getElementById("btnSubmitLabels");
+	btnSubmitLabels.setAttribute("disabled", "disabled");
 	
 	var labelNames = "";
 	var picLabelSubmitLis = document.querySelectorAll("#picLabelSubmitUL>li"); 
@@ -170,15 +172,19 @@ function submitLabelsAjax(){
 		labelNames = labelNames + picLabelSubmitLis[i].innerHTML + ","
 	}
 
+	var picLabelButtonDiv = document.getElementById("picLabelButtonDiv");
 	var xhr = new XMLHttpRequest();
+	//设置超时时间为2分钟，如果设置时间太短，会自动重新提交。
+	xhr.timeout = 120000;
 	xhr.onreadystatechange=function(){
 		if (xhr.readyState==4 && xhr.status==200){
+			btnSubmitLabels.setAttribute("disabled", "");
 			picLabelButtonDiv.innerHTML = "OK,照片处理完毕！\n"+xhr.responseText;
 			window.location="./photos.html";
 		}
 	}
 	xhr.open("POST","/fileUpload/submitLabels",true);
-	xhr.send("batchCode="+batchCode+"&labelNames="+labelNames);
+	xhr.send("batchCode="+batchCode+"&labelNames="+labelNames+"&k="+Math.random());
 	
 	picLabelButtonDiv.innerHTML = "照片正在处理中，请等待...";
 }

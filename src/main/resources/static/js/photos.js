@@ -3,9 +3,6 @@
 	load: function(json){
 		var picPreviewDiv = document.getElementById("picPreviewDiv");
 		for (var i=0;i<json.length;i++){
-			console.log("json data:"+json[i].member);
-			console.log("json data:"+json[i].score);
-
 			var imgBoxNode = document.createElement("div");
 			imgBoxNode.setAttribute("id", "picPreviewImgBox_"+i);
 			imgBoxNode.setAttribute("class", "picPreviewImgBox");
@@ -13,7 +10,8 @@
 			var imgNode = document.createElement("img");
 			imgNode.setAttribute("id", "picPreviewImg_"+i);
 			imgNode.setAttribute("class", "picPreviewImg");
-			imgNode.setAttribute("src", "http://pic.zhangkm.com/"+json[i].member+"_thumb.jpg");
+			imgNode.setAttribute("src", "http://p.zhangkm.com/photo/"+json[i].member+"_thumb.jpg");
+			console.log("http://p.zhangkm.com/photo/"+json[i].member+"_thumb.jpg");
 			imgBoxNode.appendChild(imgNode);
 			
 			picPreviewDiv.insertBefore(imgBoxNode, picPreviewDiv.childNodes[0]);

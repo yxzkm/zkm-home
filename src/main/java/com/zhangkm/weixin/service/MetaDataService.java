@@ -118,7 +118,7 @@ public class MetaDataService{
         for (Directory directory : metadata.getDirectories()) {
 
             for (Tag tag : directory.getTags()) {
-            	logger.info(tag.toString());
+            	System.out.println(tag.toString());
             }
             if (directory.hasErrors()) {
                 for (String error : directory.getErrors()) {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
-<title>Upload Files using XMLHttpRequest - Minimal</title>
+<title>照片列表</title>
 <link rel="stylesheet" href="/css/fileupload.css">
 
 </head>
@@ -14,16 +14,12 @@
 	<div class="picPreviewDiv" id="picPreviewDiv">
 	</div>
 	<div id="picUploadButtonDiv" class="hidden">
-		<button class="btn" type="button" onclick="uploadFile();" >上传...</button> 
+		<button class="btn" type="button" onclick="window.location='/';">继续加载...</button> 
 		<span class="desc" id="progressNumber"></span>
 	</div>
 </div>
 
 </div>
-<template id="mytemp">
-<li issubmit="yes" onclick="moveLabel(this);" >标签</li> 
-</template>
-
 </body>
 <script src="/js/photos.js" ></script>
 </html>

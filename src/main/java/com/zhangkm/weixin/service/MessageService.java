@@ -17,7 +17,7 @@ public class MessageService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String CON_HOME_PAGE = ""
-			+ "公众号“雷蒙德”微网站首页:\n"
+			+ "公众号“雷蒙德”微网站首页:\n\n\n"
 			+ "<a href=\"http://zhangkm.com/\">http://zhangkm.com</a>";
 
 	private final String CON_SAY_HELLO = ""
