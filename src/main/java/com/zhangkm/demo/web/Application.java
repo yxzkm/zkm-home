@@ -4,13 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import com.zhangkm.weixin.web.UserSecurityInterceptor;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 /**
  * springboot 官方文档：
@@ -33,16 +32,17 @@ public class Application extends WebMvcConfigurerAdapter{
 		SpringApplication.run(Application.class, args);
 	} 
 
-    @RequestMapping("/")
-    String home() {
-    	logger.info("欢迎来到：zkm-weixin");
-        return "redirect:/html/file_upload.html";
+	/**
+	 * 添加websocket支持
+	 * @Description: TODO
+	 * @return
+	 */
+	@Bean
+    public ServerEndpointExporter serverEndpointExporter() {
+        return new ServerEndpointExporter();
     }
-    @RequestMapping("/api")
-    String api() {
-        return "redirect:/swagger-ui.html";
-    }
-    
+
+
     /**
      * 定时任务
      */
@@ -56,7 +56,7 @@ public class Application extends WebMvcConfigurerAdapter{
      */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new UserSecurityInterceptor()).addPathPatterns("/my**");
+		registry.addInterceptor(new InterceptorDemo()).addPathPatterns("/my**");
         super.addInterceptors(registry);
 	}
     

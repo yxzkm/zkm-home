@@ -1,4 +1,4 @@
-package com.zhangkm.demo.base.websocket;
+package com.zhangkm.demo.web;
 
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;

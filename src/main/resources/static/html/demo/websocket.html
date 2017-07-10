@@ -19,8 +19,9 @@ Websocket通讯测试<br/>
        
       //判断当前浏览器是否支持WebSocket
       if('WebSocket' in window){
+          websocket = new WebSocket("ws://localhost/zkmxxx");
           //websocket = new WebSocket("ws://zhangkm.com/zkm");
-          websocket = new WebSocket("ws://localhost:8899/zkmxxx");
+          //websocket = new WebSocket("ws://localhost:8899/zkmxxx");
           //websocket = new WebSocket("ws://123.57.208.185:8080/zkm");
           //websocket = new WebSocket("ws://192.168.1.133:8080/zkm");
       }
