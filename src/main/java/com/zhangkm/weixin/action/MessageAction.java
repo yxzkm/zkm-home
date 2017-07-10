@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.zhangkm.weixin.message.MessageUtil;
+import com.zhangkm.weixin.base.message.MessageUtil;
 import com.zhangkm.weixin.service.MessageService;
 
 @Controller

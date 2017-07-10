@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.zhangkm.weixin.message.Message;
-import com.zhangkm.weixin.message.MessageUtil;
-import com.zhangkm.weixin.message.res.TextMessage;
+import com.zhangkm.weixin.base.message.Message;
+import com.zhangkm.weixin.base.message.MessageUtil;
+import com.zhangkm.weixin.base.message.res.TextMessage;
 
 @Service("messageService")
 public class MessageService {
