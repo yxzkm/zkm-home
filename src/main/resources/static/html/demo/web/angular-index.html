@@ -52,15 +52,15 @@ angular.module('routingDemoApp',['ngRoute'])
 	.config(['$routeProvider', function($routeProvider){
 		$routeProvider
 			.when('/index',{
-				templateUrl: './angular-template/indexPage.html',
+				templateUrl: './angular-index.html',
 				controller: 'indexPageCtr',
 			})
 			.when('/computers',{
-				templateUrl: './angular-template/computer.html',
+				templateUrl: './angular-computer.html',
 				controller: 'fenLeiCtr',
 			})
 			.when('/printers',{
-				templateUrl: './angular-template/printer.html',
+				templateUrl: './angular-printer.html',
 				controller: 'printerCtr',
 			})
 			.otherwise({redirectTo:'/index'});
