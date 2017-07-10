@@ -36,7 +36,7 @@
     		append子节点：如果是 true，日志被追加到文件结尾，如果是 false，清空现存文件，默认是true。
     -->
 	<appender name="logFile" class="ch.qos.logback.core.FileAppender">   
-		<file>logFile.log</file>
+		<file>C:/zkm/files4test/log/logFile.log</file>
 		<append>true</append>  
 		<encoder>   
 			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>   
@@ -51,7 +51,7 @@
     		rollingPolicy子节点:当触发条件满足时，决定如何滚动。涉及文件移动和重命名。
     -->
 	<appender name="rollingFileBaseTime" class="ch.qos.logback.core.rolling.RollingFileAppender">   
-		<file>rollingFileBaseTime.log</file>  
+		<file>C:/zkm/files4test/log/rollingFileBaseTime.log</file>
 		<append>true</append>  
 		   
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">   
@@ -65,11 +65,11 @@
 	</appender>   
 
 	<appender name="rollingFileBaseSize" class="ch.qos.logback.core.rolling.RollingFileAppender">   
-		<file>rollingFileBaseSize.log</file>  
+		<file>C:/zkm/files4test/log/rollingFileBaseSize.log</file>
 		<append>true</append>  
 		   
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">   
-			<fileNamePattern>logFile.%i.log</fileNamePattern>   
+			<fileNamePattern>C:/zkm/files4test/log/logFile.%i.log</fileNamePattern>
 			<minIndex>1</minIndex>   
 			<maxIndex>10</maxIndex>   
 		</rollingPolicy>   
