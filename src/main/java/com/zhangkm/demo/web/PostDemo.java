@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping(value = "/demo", produces = "text/html;charset=UTF-8")
+@RequestMapping(value = "/demo/web", produces = "text/html;charset=UTF-8")
 public class PostDemo {
 	
 	@Autowired
