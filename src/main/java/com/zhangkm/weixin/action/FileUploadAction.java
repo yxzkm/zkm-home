@@ -37,6 +37,7 @@ import com.zhangkm.weixin.service.MediaService;
 import com.zhangkm.weixin.service.MetaDataService;
 import com.zhangkm.weixin.service.RedisService;
 
+import io.swagger.annotations.Api;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.Thumbnails.Builder;
 import net.coobird.thumbnailator.geometry.Positions;

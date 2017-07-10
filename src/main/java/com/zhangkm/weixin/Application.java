@@ -36,7 +36,7 @@ public class Application extends WebMvcConfigurerAdapter{
     @RequestMapping("/")
     String home() {
     	logger.info("欢迎来到：zkm-weixin");
-        return "redirect:/html/file_upload.html";
+        return "redirect:/html/weixin/file_upload.html";
     }
     @RequestMapping("/api")
     String api() {
