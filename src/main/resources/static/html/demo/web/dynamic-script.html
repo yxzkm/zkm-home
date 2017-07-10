@@ -13,20 +13,20 @@
 
 <!-- 方法一：使用jquery.getScript方法进行动态脚本加载 -->
 <script>
-var url = "/js/demo/dynamic-script/dyn1.js";
+var url = "/js/demo/web/dynamic-script-1.js";
 $.getScript( url, function() {
 });
 </script>
 
 <!-- 方法二：使用document.write方法动态添加script标签 -->
 <script> 
-document.write("<script src='/js/demo/dynamic-script/dyn2.js'><\/script>"); 
+document.write("<script src='/js/demo/web/dynamic-script-2.js'><\/script>"); 
 </script> 
 
 <!-- 方法三：使用改变dom节点src属性的方法动态加载脚本 -->
 <script src='' id="s1"></script> 
 <script> 
-document.getElementById('s1').setAttribute("src","/js/demo/dynamic-script/dyn3.js");
+document.getElementById('s1').setAttribute("src","/js/demo/web/dynamic-script-3.js");
 </script> 
 
 <!-- 方法四：使用在head中添加script节点的方法动态加载脚本 -->
@@ -34,7 +34,7 @@ document.getElementById('s1').setAttribute("src","/js/demo/dynamic-script/dyn3.j
 var oHead = document.getElementsByTagName('HEAD').item(0); 
 var oScript= document.createElement("script"); 
 oScript.type = "text/javascript"; 
-oScript.src="/js/demo/dynamic-script/dyn4.js"; 
+oScript.src="/js/demo/web/dynamic-script-4.js"; 
 oHead.appendChild( oScript); 
 </script>
 
