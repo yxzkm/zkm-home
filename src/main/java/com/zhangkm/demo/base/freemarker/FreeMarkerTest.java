@@ -13,7 +13,11 @@ public class FreeMarkerTest {
 
 		/* Create and adjust the configuration singleton */
 		Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
-		cfg.setDirectoryForTemplateLoading(new File("./resources/template/demo/base"));
+		
+		System.out.println(System.getProperty("user.dir"));//user.dir指定了当前的路径 
+		
+		cfg.setDirectoryForTemplateLoading(new File("./src/main/resources/template/demo/base"));
+		
 		cfg.setDefaultEncoding("UTF-8");               
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 		cfg.setLogTemplateExceptions(false);
@@ -38,7 +42,7 @@ public class FreeMarkerTest {
 			Template temp = cfg.getTemplate("freeMakerTestTemplate.ftlh");
 
 			/* Merge data-model with template */
-			out = new FileOutputStream("./resources/template/dmeo/base/freeMakerTestTemplate.html");// 打印到文件
+			out = new FileOutputStream("./src/main/resources/template/dmeo/base/freeMakerTestTemplate.html");// 打印到文件
 			writer = new OutputStreamWriter(out);
 			temp.process(root, writer);
 		} catch (Exception e) {
