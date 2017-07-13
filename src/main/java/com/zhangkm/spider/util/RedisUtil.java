@@ -13,10 +13,6 @@ public class RedisUtil {
 	
 	public static JedisPool jedisPool = null;
 	
-	public static void main(String[] args){
-		initJedisPool();
-	}
-	
 	public static void clearAllQueue(){
 		
 		clearList(G.QUEUE_JOB_CATCHER);
@@ -37,53 +33,8 @@ public class RedisUtil {
 		jedis.select(G.REDIS_DB_INDEX);
 		return jedis;
 	}
-	public static boolean initJedisPool() {
-    	JedisPoolConfig config = new JedisPoolConfig();
-    	
-    	//config.setMaxActive(500);
-        //config.setMaxIdle(5);
-        //config.setMaxWait(1000*100);
 
-        config.setMaxIdle(5000);
-        
-        config.setTestOnBorrow(true);
-        jedisPool = new JedisPool(config, G.REDIS_IP, G.REDIS_PORT);
-        
-        Jedis jedis = null;
-        try {
-			jedis = getJedisFromPool();
-			String pong = jedis.ping();
-			if(pong!=null && pong.trim().equalsIgnoreCase("PONG")){
-				return true;
-			}
-			return false;
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			System.out.println("error: init redis client exception");
-			try {
-				jedisPool.returnBrokenResource(jedis);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return false;
-        } finally {
-            if (jedis != null && jedisPool!=null) {
-            	try {
-            		jedisPool.returnResource(jedis);
-				} catch (Exception e) {
-					System.out.println("error: redis returnResource exception");
-				}
-            }
-        }
-
-    }
-    
-	public static void destroyJedisPool() {
-    	jedisPool.destroy();
-    }
-	
-
-    public static boolean pushListData(String queueName,Map<String,String> map){
+	public static boolean pushListData(String queueName,Map<String,String> map){
         Jedis jedis = null;
         try {
 			jedis = getJedisFromPool();
