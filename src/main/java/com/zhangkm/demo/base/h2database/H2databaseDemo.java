@@ -27,9 +27,9 @@ import org.apache.commons.dbutils.ResultSetHandler;
  * @Description: TODO
  *
  */
-public class H2databaseDemo {
+public final class H2databaseDemo {
     private static java.sql.Connection dbConn;
-
+    private H2databaseDemo(){}
     public static Connection getDBConn() {
         try {
             if(dbConn!=null && !dbConn.isClosed()) return dbConn;
