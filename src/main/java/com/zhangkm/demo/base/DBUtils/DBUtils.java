@@ -5,11 +5,24 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 
+/**
+ * Apache Commons DbUtils 官方 Demo
+ * DbUtils: JDBC Utility Component Examples
+ * http://commons.apache.org/proper/commons-dbutils/examples.html
+ * 
+ * @ClassName: DBUtils
+ * @Description: TODO
+ *
+ */
 public class DBUtils {
 	private static String DB_SERVER_IP = "127.0.0.1";
 	private static String DB_SERVER_PORT = "3306";
@@ -54,39 +67,32 @@ public class DBUtils {
 
 	public static void query(){
 
-		ResultSetHandler<Object[]> h = new ResultSetHandler<Object[]>() {
-		    public Object[] handle(ResultSet rs) throws SQLException {
-		        if (!rs.next()) {
-		            return null;
-		        }
-				
-		        ResultSetMetaData meta = rs.getMetaData();
-		        int cols = meta.getColumnCount();
-		        Object[] result = new Object[cols];
-
-		        for (int i = 0; i < cols; i++) {
-		            result[i] = rs.getObject(i + 1);
-
-		            System.out.println("result["+i+"]: "+result[i].toString());
-
-		            
-		        }
-
-		        return result;
-		    }
+		ResultSetHandler<List<Map<String,Object>>> handler = new ResultSetHandler<List<Map<String,Object>>>() {
+            public List<Map<String,Object>> handle(ResultSet rs) throws SQLException {
+                List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+                while(rs.next()){
+                    Map<String,Object> map = new HashMap<String,Object>();
+                    ResultSetMetaData meta = rs.getMetaData();
+                    int cols = meta.getColumnCount();
+                    for (int i = 0; i < cols; i++) {
+                        map.put(meta.getColumnName(i+1), rs.getObject(i + 1).toString());
+                    }
+                    list.add(map);
+                }
+                return list;
+            }
 		};
 
 		// No DataSource so we must handle Connections manually
 		QueryRunner run = new QueryRunner();
-
 		Connection conn = getDBConn(); // open a connection
 		try{
-			Object[] result = run.query(conn, "SELECT * FROM test WHERE type=? ", h, 0);
-			if(result==null || result.length==0) return;
-			System.out.println("result.length: "+result.length);
+		    List<Map<String,Object>> resultList = run.query(conn, "SELECT * FROM test WHERE type=? ", handler, 0);
+			if(resultList==null || resultList.size()==0) return;
+			System.out.println("result.length: "+resultList.size());
 
-			for(Object obj : result){
-				System.out.println(obj.toString());
+			for(Map<String,Object> map : resultList){
+				System.out.println(map.toString());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

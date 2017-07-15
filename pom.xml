@@ -249,7 +249,13 @@
     		<artifactId>solr-solrj</artifactId>
     		<version>6.6.0</version>
 		</dependency>
-		
+
+		<!-- h2database -->
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <version>1.4.196</version>
+		</dependency>
 		
 	</dependencies>
 
