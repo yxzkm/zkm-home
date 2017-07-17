@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import com.zhangkm.spider.util.Common;
 import com.zhangkm.spider.util.RedisUtil;
 
-public class QueueThread extends Thread{
+public abstract class QueueThread extends Thread{
 	protected String taskName = null;
 	protected int MAX_THREAD_NUMBER = 1;   //默认最大线程数
 	protected int SLEEP_BEFORE_NEXT_THREAD = 50;  //默认每次从任务队列取数据的时间间隔毫秒数
@@ -35,18 +35,18 @@ public class QueueThread extends Thread{
 		}
 	}
 
-	protected boolean beforeRun() {
-		return false;
-	}
+	protected abstract boolean beforeRun();
 
-	protected void createThread(ExecutorService pool) {
-		return;
-	}
+	protected abstract void createThread(ExecutorService pool);
 
-	protected void doTimeJob() {
-		return;
-	}
-
+	/**
+	 * 这个线程用来监测队列参数，动态调整该队列的并发线程数
+	 * 如果队列中的最大线程数发生变化，立即改变MAX_THREAD_NUMBER。
+	 * 
+	 * @ClassName: ConsoleThread
+	 * @Description: TODO
+	 *
+	 */
 	public class ConsoleThread extends Thread {
 		//查询控制台参数完成后，下次查询之前等待的毫秒数
 		private final int SLEEP_BEFORE_NEXT_LOOP = 10000;   
@@ -58,6 +58,11 @@ public class QueueThread extends Thread{
 				Common.sleep(SLEEP_BEFORE_NEXT_LOOP);
 			}
 		}
+
+	    //定时任务
+	    protected void doTimeJob() {
+	        return;
+	    }
 
 		private void initPara() {
 			String threadNum = RedisUtil.getStringData("PARAMETER:MAX_THREAD_NUMBER:" + taskName);

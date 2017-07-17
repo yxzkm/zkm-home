@@ -35,6 +35,7 @@ public class LinkSpider extends QueueThread {
 
 	public class UrlSpiderThread extends TaskThread{
 
+        @Override
 		protected boolean initQueue() {
 			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_FROM = G.QUEUE_LINK_SPIDER;
@@ -52,7 +53,7 @@ public class LinkSpider extends QueueThread {
 */
 
 	    @Override
-		protected void doMainJob() {
+		public void doMainJob() {
 			List<String> list = getPageUrlList(fromQueueMap);
 			if (list != null && list.size() > 0) {
 				for (String url : list) {

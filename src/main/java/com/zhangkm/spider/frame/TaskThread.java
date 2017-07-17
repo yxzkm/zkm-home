@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.zhangkm.spider.util.RedisUtil;
 
-public class TaskThread extends Thread{
+public abstract class TaskThread extends Thread{
 	protected Logger logger=null;// = Logger.getLogger(TaskThread.class);
 
 	protected String QUEUE_NAME_FROM;
@@ -22,9 +22,8 @@ public class TaskThread extends Thread{
 		doMainJob();
 	}
 
-	protected boolean initQueue() {
-		return false;
-	}
+	protected abstract boolean initQueue();
+    protected abstract void doMainJob();
 
 	protected void logInfo() {
 		String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -91,7 +90,4 @@ public class TaskThread extends Thread{
 		return true;
 	}
 	
-	protected void doMainJob(){
-		return;
-	}
 }
