@@ -20,6 +20,7 @@ import com.zhangkm.spider.util.Common;
 
 public class LinkSpider extends QueueThread {
 
+    @Override
 	protected boolean beforeRun() {
 		super.taskName = "LINK_SPIDER";
 		super.MAX_THREAD_NUMBER =10;
@@ -27,6 +28,7 @@ public class LinkSpider extends QueueThread {
 		return true;
 	}
 
+    @Override
 	protected void createThread(ExecutorService pool){
 		pool.execute(new UrlSpiderThread());
 	}
@@ -39,16 +41,17 @@ public class LinkSpider extends QueueThread {
 			super.QUEUE_NAME_TO = G.QUEUE_LINK_CHECKER;
 			return true;
 		}
-		/*
+
+/*
 		protected boolean getDataFromQueueMap(){
 			fromQueueMap = new HashMap<String,String>();
 			fromQueueMap.put("channel_url","http://bbs.ifeng.com/forumdisplay.php?fid=324");
 			fromQueueMap.put("jsoup_url_regex","(.*)/viewthread\\.php\\?tid=\\d*(.*)");
-
 			return true;
 		}
 */
 
+	    @Override
 		protected void doMainJob() {
 			List<String> list = getPageUrlList(fromQueueMap);
 			if (list != null && list.size() > 0) {

@@ -12,9 +12,6 @@ public class AllTaskMain {
 
 	public static void main(String[] args) {
 		G.initParameters();
-		if (!G.initMysqlConnection()) return;
-		if (!G.initHttpClient()) return;
-		
 		new JobCatcher().start();
 		new LinkSpider().start();
 		new LinkChecker().start();

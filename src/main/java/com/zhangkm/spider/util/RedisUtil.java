@@ -6,7 +6,6 @@ import com.zhangkm.spider.frame.G;
 import net.sf.json.JSONObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Transaction;
 
 public class RedisUtil {
@@ -30,7 +29,7 @@ public class RedisUtil {
 
 	private static Jedis getJedisFromPool() throws Exception{
 		Jedis jedis = jedisPool.getResource();
-		jedis.select(G.REDIS_DB_INDEX);
+		jedis.select(0);
 		return jedis;
 	}
 
