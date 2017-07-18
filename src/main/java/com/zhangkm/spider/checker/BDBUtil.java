@@ -2,6 +2,8 @@ package com.zhangkm.spider.checker;
 
 import java.io.File;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
@@ -9,7 +11,6 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.OperationStatus;
-import com.zhangkm.spider.frame.G;
 
 public class BDBUtil {
 
@@ -20,18 +21,23 @@ public class BDBUtil {
 	public static final int BDB_KEYEXIST = 0;  // 主键重复，写入失败，说明url已经存在
 	public static final int BDB_ERROR = -1;  // url不合法或其他错误
 	
+    @Value("${bdb.name}")
+    private static String BDB_NAME;
+    
+    @Value("${bdb.path}")
+    private static String BDB_PATH;
 	
 	public static boolean init(){
 		try {
 			EnvironmentConfig envConfig = new EnvironmentConfig();
 			envConfig.setAllowCreate(true);
-			dbEnv = new Environment(new File(G.BDB_PATH), envConfig);
+			dbEnv = new Environment(new File(BDB_PATH), envConfig);
 
 			DatabaseConfig dbConfig = new DatabaseConfig();
 			dbConfig.setAllowCreate(true);
 			dbConfig.setSortedDuplicates(false);
 			
-			BBS_URL_DB = dbEnv.openDatabase(null,G.BDB_NAME, dbConfig); 
+			BBS_URL_DB = dbEnv.openDatabase(null,BDB_NAME, dbConfig); 
 
 			return true;
 		} catch (DatabaseException dbe) {

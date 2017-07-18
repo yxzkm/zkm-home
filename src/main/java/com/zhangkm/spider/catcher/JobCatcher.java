@@ -10,18 +10,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zhangkm.spider.frame.G;
 import com.zhangkm.spider.frame.QueueThread;
+import com.zhangkm.spider.frame.RedisDAO;
 import com.zhangkm.spider.frame.TaskThread;
 import com.zhangkm.spider.util.RedisUtil;
 
 public class JobCatcher extends QueueThread {
-	
+
 	protected boolean beforeRun(){
 		System.out.println("beforeRun");
 
@@ -37,6 +38,11 @@ public class JobCatcher extends QueueThread {
 	
 	public class MultiTaskThread extends TaskThread{
 
+	    @Autowired
+	    private Connection h2Connection;
+	    @Autowired
+	    private RedisDAO redisDAO;
+
 		protected boolean initQueue(){
 			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_FROM = G.QUEUE_JOB_CATCHER;
@@ -46,7 +52,7 @@ public class JobCatcher extends QueueThread {
 
 		public void doMainJob(){
 			
-			if(RedisUtil.getListSize(QUEUE_NAME_TO)>0) return;
+			if(redisDAO.getListSize(QUEUE_NAME_TO)>0) return;
 
 			//从数据库中获取采集点，然后放入待采集队列中
 			insertTask();
@@ -71,7 +77,6 @@ public class JobCatcher extends QueueThread {
 	        };
 
 	        QueryRunner run = new QueryRunner();
-	        Connection conn = G.getH2Conn();
             String sql = ""
                     + "\n SELECT " 
                     + "\n   a.entry_website entry_website, "
@@ -97,7 +102,7 @@ public class JobCatcher extends QueueThread {
 	        
 	        try{
 	            List<Map<String,Object>> resultList = run.query(
-	                    conn, sql, handler);
+	                    h2Connection, sql, handler);
 
 	            for(Map<String,Object> map : resultList){
 	                System.out.println(map.toString());
@@ -124,12 +129,6 @@ public class JobCatcher extends QueueThread {
 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
-	        } finally {
-	            try {
-	                DbUtils.close(conn);
-	            } catch (SQLException e) {
-	                e.printStackTrace();
-	            }  
 	        }
 	    }
 		

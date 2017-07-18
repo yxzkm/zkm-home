@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
+
+import net.sf.json.JSONObject;
 
 /**
  * 关于如何使用 RedisTemplate操作redis，建议查阅官方文档，见下面的地址：
@@ -25,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisDAO {
     @Autowired 
-    private RedisTemplate<String, ?> redisTemplate;  
+    private StringRedisTemplate redisTemplate;  
 
     /**
      * 向一个String写入值，如果不存在，则创建一个String
@@ -132,8 +134,18 @@ public class RedisDAO {
         return list;
     }
 
+    @SuppressWarnings("unchecked")
+    public Map<String,String> rightPop(String key) {
+        String jsonText = redisTemplate.opsForList().rightPop(key);
+        JSONObject jsonObject = JSONObject.fromObject(jsonText);
+        return  (Map<String,String>)jsonObject;
+    }
     
-    
+    public int getListSize(String key){
+        return redisTemplate.opsForList().size(key).intValue();
+    }
+
+
     /**
      * (慎用)删除一个String/Set/Hash/List
      * @param key

@@ -5,10 +5,16 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zhangkm.spider.util.RedisUtil;
 
 public abstract class TaskThread extends Thread{
+
+    @Autowired
+    private RedisDAO redisDAO;
+
+
 	protected Logger logger=null;// = Logger.getLogger(TaskThread.class);
 
 	protected String QUEUE_NAME_FROM;
@@ -81,7 +87,7 @@ public abstract class TaskThread extends Thread{
 	protected boolean getDataFromQueueMap(){
 		//起始任务，不需要从队列里面取数据
 		if (!QUEUE_NAME_FROM.equals(G.QUEUE_JOB_CATCHER)) {
-			fromQueueMap = RedisUtil.popListData(QUEUE_NAME_FROM);
+			fromQueueMap = redisDAO.rightPop(QUEUE_NAME_FROM);
 			if (fromQueueMap == null || fromQueueMap.isEmpty()) {
 				//Common.sleep(WAIT_QUEUE_PUSH_DATA);
 				return false;

@@ -17,7 +17,8 @@ public abstract class QueueThread extends Thread{
 		
 		if (!beforeRun()) return;
 
-		new ConsoleThread().start();
+		//new ConsoleThread().start();
+		
 		ExecutorService pool = Executors.newFixedThreadPool(MAX_THREAD_NUMBER);
 
 		for (int k = 0; k < 1;) { // 死循环

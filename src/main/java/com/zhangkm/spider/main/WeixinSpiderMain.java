@@ -1,13 +1,10 @@
 package com.zhangkm.spider.main;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,12 +15,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.PropertyConfigurator;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -47,12 +42,7 @@ public class WeixinSpiderMain {
 	public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36";
 
 	public static void main(String[] args) {
-		initParameters();
-		if(!initMysqlConnection()) {
-			System.out.println("[数据库初始化失败]");
-			return;	
-		}
-		
+
 		for(int i=1;i<Integer.MAX_VALUE;i++){
 
 			System.out.println("\n\n\n\n\n");
@@ -637,83 +627,4 @@ public class WeixinSpiderMain {
 	}
 
 	
-	/**
-	 * 用于初始化各项公共参数
-	 */
-	public static void initParameters(){
-	     Properties prop = null;
-	       try {
-			Properties ps = System.getProperties();
-			// ps.list(System.out);
-			G.CRAWLER_HOME = ps.getProperty("user.dir");
-			System.out.println("hello G.CRAWLER_HOME:"+G.CRAWLER_HOME);
-
-			BufferedInputStream inBuff = new BufferedInputStream(
-					new FileInputStream(G.CRAWLER_HOME + "/cfg/parameters.properties"));
-			prop = new Properties();
-			prop.load(inBuff);
-			inBuff.close();
-
-			G.MYSQL_IP = prop.getProperty("MYSQL_IP");
-			G.MYSQL_PORT = Integer.parseInt(prop.getProperty("MYSQL_PORT"));
-			G.MYSQL_DATABASE = prop.getProperty("MYSQL_DATABASE");
-			G.MYSQL_USER = prop.getProperty("MYSQL_USER");
-			G.MYSQL_PWD = prop.getProperty("MYSQL_PWD");
-
-			G.LOCAL_FILE_PATH = prop.getProperty("LOCAL_FILE_PATH");
-			G.JCRB_CHANNEL_ID = prop.getProperty("JCRB_CHANNEL_ID");
-			
-			//初始化log4j配置文件。
-			PropertyConfigurator.configure(G.CRAWLER_HOME + "/cfg/log4j.properties"); 
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static boolean initMysqlConnection() {
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			String dbString = ""
-					+"jdbc:mysql://"
-					+ G.MYSQL_IP
-					+ ":"
-					+ G.MYSQL_PORT
-					+ "/"
-					+ G.MYSQL_DATABASE
-					+ "?rewriteBatchedStatements=true"
-					+ "&characterEncoding=utf-8"
-					+ "&user=" + G.MYSQL_USER
-					+ "&password=" + G.MYSQL_PWD;
-			System.out.println(dbString);
-			MYSQL_CONN = DriverManager.getConnection(dbString);
-			stmt = MYSQL_CONN.createStatement();
-			stmt.setQueryTimeout(10);
-			rs = stmt.executeQuery(" select count(*) as num from wxspider_entry ");
-			while(rs.next()){
-				System.out.println(rs.getString(1));
-			}
-			return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally{
-			try {
-				if(rs!=null) rs.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
-				if(stmt!=null) stmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-
-
 }
