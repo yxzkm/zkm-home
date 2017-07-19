@@ -15,12 +15,6 @@ public class G {
 	public static final String QUEUE_MONGO_WRITER = "QUEUE:MONGO_WRITER";
 	public static final String QUEUE_SOLR_WRITER = "QUEUE:SOLR_WRITER";
 
-	public static HttpClient HTTP_CLIENT; //全局HttpClient池
-
-	/**********************************************************/
-	/** 以下参数，均来自配置文件   **/
-	public static int HTTP_CLIENT_MAX_NUM; //最大httpclient并发数量
-
 	public static String LOCAL_FILE_PATH;
 	public static String JCRB_CHANNEL_ID;
 	

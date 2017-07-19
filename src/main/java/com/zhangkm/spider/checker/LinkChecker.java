@@ -8,13 +8,18 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zhangkm.spider.frame.G;
 import com.zhangkm.spider.frame.QueueThread;
+import com.zhangkm.spider.frame.RedisDAO;
 import com.zhangkm.spider.frame.TaskThread;
 import com.zhangkm.spider.util.RedisUtil;
 
 public class LinkChecker extends QueueThread {
+   
+    @Autowired
+    protected RedisDAO redisDAO;
 
 	protected boolean beforeRun(){
 		super.taskName = "LINK_CHECKER";
@@ -28,9 +33,13 @@ public class LinkChecker extends QueueThread {
 	}
 
 	private class UrlCheckerThread extends TaskThread {
-		
+
+	    @Override
+        protected void getDataFromQueueMap() {
+            fromQueueMap = redisDAO.rightPop(QUEUE_NAME_FROM);
+        }           
+
 		protected boolean initQueue(){
-			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_FROM = G.QUEUE_LINK_CHECKER;
 			super.QUEUE_NAME_TO = G.QUEUE_PAGE_SPIDER;
 			return true;

@@ -7,13 +7,18 @@ import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zhangkm.spider.frame.G;
 import com.zhangkm.spider.frame.QueueThread;
+import com.zhangkm.spider.frame.RedisDAO;
 import com.zhangkm.spider.frame.TaskThread;
 import com.zhangkm.spider.util.RedisUtil;
 
 public class TextExtractor extends QueueThread {
+    @Autowired
+    protected RedisDAO redisDAO;
+
 
 	protected boolean beforeRun(){
 		super.taskName = "TEXT_EXTRACTOR";
@@ -26,9 +31,13 @@ public class TextExtractor extends QueueThread {
 	}
 
 	public class TextExtractorThread extends TaskThread {
+        @Override
+        protected void getDataFromQueueMap() {
+            fromQueueMap = redisDAO.rightPop(QUEUE_NAME_FROM);
+        }           
+
 
 		protected boolean initQueue(){
-			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_FROM = G.QUEUE_TEXT_EXTRACTOR;
 			super.QUEUE_NAME_TO = G.QUEUE_BASIC_FILTER;
 			return true;

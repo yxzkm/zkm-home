@@ -61,7 +61,7 @@ public class ImageSpider extends Thread{
 			if(url!=null && !url.trim().equals("")){
 		       	byte[] image = null;
 				try {
-					image = Common.getImage(url,G.HTTP_CLIENT);
+					image = Common.getImage(url,null);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

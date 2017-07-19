@@ -24,9 +24,11 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zhangkm.spider.frame.G;
 import com.zhangkm.spider.frame.QueueThread;
+import com.zhangkm.spider.frame.RedisDAO;
 import com.zhangkm.spider.frame.TaskThread;
 import com.zhangkm.spider.util.RedisUtil;
 
@@ -34,6 +36,9 @@ public class BasicFilter extends QueueThread {
 
 	private List<String> termList = null;
 	private Analyzer ANALYZER = new CJKAnalyzer();
+    @Autowired
+    protected RedisDAO redisDAO;
+
 
 	public boolean beforeRun(){
 		super.taskName = "BASIC_FILTER";
@@ -55,9 +60,14 @@ public class BasicFilter extends QueueThread {
 	
 	public class MultiTaskThread extends TaskThread{
 		private RAMDirectory RAM_WORK_DIRECTORY = null;
+        
+		@Override
+        protected void getDataFromQueueMap() {
+            fromQueueMap = redisDAO.rightPop(QUEUE_NAME_FROM);
+        }           
+
 
 		protected boolean initQueue(){
-			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_FROM = G.QUEUE_BASIC_FILTER;
 			super.QUEUE_NAME_TO = G.QUEUE_INDUSTRY_FILTER;
 			return true;

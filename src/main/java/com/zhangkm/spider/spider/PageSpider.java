@@ -3,15 +3,19 @@ package com.zhangkm.spider.spider;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zhangkm.spider.frame.G;
 import com.zhangkm.spider.frame.QueueThread;
+import com.zhangkm.spider.frame.RedisDAO;
 import com.zhangkm.spider.frame.TaskThread;
 import com.zhangkm.spider.util.Common;
 import com.zhangkm.spider.util.RedisUtil;
 import com.zhangkm.spider.util.UrlResponse;
 
 public class PageSpider extends QueueThread {
+    @Autowired
+    protected RedisDAO redisDAO;
 
 	protected boolean beforeRun(){
 		super.taskName = "PAGE_SPIDER"; 
@@ -25,9 +29,12 @@ public class PageSpider extends QueueThread {
 	}
 	
 	public class HtmlSpiderThread extends TaskThread {
+        @Override
+        protected void getDataFromQueueMap() {
+            fromQueueMap = redisDAO.rightPop(QUEUE_NAME_FROM);
+        }           
 
 		protected boolean initQueue(){
-			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_FROM = G.QUEUE_PAGE_SPIDER;
 			super.QUEUE_NAME_TO = G.QUEUE_TEXT_EXTRACTOR;
 			return true;
@@ -35,7 +42,7 @@ public class PageSpider extends QueueThread {
 		
 		protected void doMainJob() {
 			String url = fromQueueMap.get("url");
-			UrlResponse urlResponse = Common.getUrlResponseTimes(url,G.HTTP_CLIENT);
+			UrlResponse urlResponse = Common.getUrlResponseTimes(url,null);
 			if(urlResponse==null){
 				logError();
 			}else{

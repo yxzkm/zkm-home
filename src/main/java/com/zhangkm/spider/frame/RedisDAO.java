@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import net.sf.json.JSONObject;
 
@@ -24,8 +25,9 @@ import net.sf.json.JSONObject;
  * @author zhangkm
  *
  */
-@Component
+@Service("redisDAO")
 public class RedisDAO {
+    
     @Autowired 
     private StringRedisTemplate redisTemplate;  
 
@@ -139,6 +141,10 @@ public class RedisDAO {
         String jsonText = redisTemplate.opsForList().rightPop(key);
         JSONObject jsonObject = JSONObject.fromObject(jsonText);
         return  (Map<String,String>)jsonObject;
+    }
+    
+    public void leftPush(String key, String value) {
+        redisTemplate.opsForList().leftPush(key, value);
     }
     
     public int getListSize(String key){

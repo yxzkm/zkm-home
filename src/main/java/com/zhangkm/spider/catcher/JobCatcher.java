@@ -14,17 +14,26 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.zhangkm.spider.frame.G;
 import com.zhangkm.spider.frame.QueueThread;
 import com.zhangkm.spider.frame.RedisDAO;
 import com.zhangkm.spider.frame.TaskThread;
-import com.zhangkm.spider.util.RedisUtil;
 
+import net.sf.json.JSONObject;
+
+@Service
 public class JobCatcher extends QueueThread {
+
+    @Autowired
+    private Connection h2Connection;
+    @Autowired
+    protected RedisDAO redisDAO;
 
 	protected boolean beforeRun(){
 		System.out.println("beforeRun");
+        System.out.println("QUEUE_LINK_SPIDER SIZE:"+redisDAO.getListSize(G.QUEUE_LINK_SPIDER));
 
 		super.taskName = "JOB_CATCHER";
 		super.MAX_THREAD_NUMBER = 1;
@@ -38,13 +47,7 @@ public class JobCatcher extends QueueThread {
 	
 	public class MultiTaskThread extends TaskThread{
 
-	    @Autowired
-	    private Connection h2Connection;
-	    @Autowired
-	    private RedisDAO redisDAO;
-
 		protected boolean initQueue(){
-			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_FROM = G.QUEUE_JOB_CATCHER;
 			super.QUEUE_NAME_TO = G.QUEUE_LINK_SPIDER;
 			return true;
@@ -52,19 +55,23 @@ public class JobCatcher extends QueueThread {
 
 		public void doMainJob(){
 			
-			if(redisDAO.getListSize(QUEUE_NAME_TO)>0) return;
+//			if(redisDAO.getListSize(QUEUE_NAME_TO)>0) return;
 
 			//从数据库中获取采集点，然后放入待采集队列中
 			insertTask();
 		}
+
+		protected void getDataFromQueueMap(){
+		    fromQueueMap = redisDAO.rightPop(QUEUE_NAME_FROM);
+		}
 		
 		public void insertTask(){
 		    
-	        ResultSetHandler<List<Map<String,Object>>> handler = new ResultSetHandler<List<Map<String,Object>>>() {
-	            public List<Map<String,Object>> handle(ResultSet rs) throws SQLException {
-	                List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+	        ResultSetHandler<List<Map<String,String>>> handler = new ResultSetHandler<List<Map<String,String>>>() {
+	            public List<Map<String,String>> handle(ResultSet rs) throws SQLException {
+	                List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 	                while(rs.next()){
-	                    Map<String,Object> map = new HashMap<String,Object>();
+	                    Map<String,String> map = new HashMap<String,String>();
 	                    ResultSetMetaData meta = rs.getMetaData();
 	                    int cols = meta.getColumnCount();
 	                    for (int i = 0; i < cols; i++) {
@@ -83,43 +90,44 @@ public class JobCatcher extends QueueThread {
                     + "\n   a.entry_group entry_group, "
                     + "\n   b.channel_name channel_name, "
                     + "\n   b.channel_url channel_url, "
-                    + "\n   if(a.entry_encoding is null,'gb2312',a.entry_encoding) encoding, "
-                    + "\n   if(a.entry_jsoup_urls is null,'href',a.entry_jsoup_urls) url_regex, "
-                    + "\n   if(a.page_jsoup_title is null,'title',a.page_jsoup_title) jsoup_title, "
-                    + "\n   if(a.page_jsoup_content is null,'body',a.page_jsoup_content) jsoup_content "
+                    + "\n   a.entry_encoding encoding, "
+                    + "\n   a.entry_jsoup_urls url_regex, "
+                    + "\n   a.page_jsoup_title jsoup_title, "
+                    + "\n   a.page_jsoup_content jsoup_content "
                     + "\n from "
                     + "\n   entry_bbs a,"
                     + "\n   entry_bbs_channel b "
                     + "\n WHERE 1=1 "
-                    + "\n   and a.entry_jsoup_urls is not null "
-                    + "\n   and a.entry_jsoup_urls <> '' "
-                    + "\n   and a.entry_jsoup_urls <> 'a[href]' "
+//                    + "\n   and a.entry_jsoup_urls is not null "
+//                    + "\n   and a.entry_jsoup_urls <> '' "
+//                    + "\n   and a.entry_jsoup_urls <> 'a[href]' "
                     + "\n   and a.entry_id = b.entry_id "
                     + "\n order by "
                     + "\n   a.entry_id asc, "
                     + "\n   b.channel_id asc ";
-
+//            String sql = "select * from test";
 	        
 	        try{
-	            List<Map<String,Object>> resultList = run.query(
+	            List<Map<String,String>> resultList = run.query(
 	                    h2Connection, sql, handler);
 
-	            for(Map<String,Object> map : resultList){
+	            for(Map<String,String> map : resultList){
 	                System.out.println(map.toString());
-	                
-	                
-//                    fromQueueMap = new HashMap<String,String>();
-//                    fromQueueMap.put("group", rs.getString("entry_group"));
-//                    fromQueueMap.put("website", rs.getString("entry_website"));
-//                    fromQueueMap.put("channel", rs.getString("channel_name"));
-//                    fromQueueMap.put("channel_url", rs.getString("channel_url"));
-//                    fromQueueMap.put("encoding", rs.getString("encoding"));
-//                    fromQueueMap.put("jsoup_url_regex", rs.getString("url_regex"));
-//                    fromQueueMap.put("jsoup_title", rs.getString("jsoup_title"));
-//                    fromQueueMap.put("jsoup_content", rs.getString("jsoup_content"));
-//                    
-//                    RedisUtil.pushListData(QUEUE_NAME_TO, fromQueueMap);
-//                    logInfo();
+
+                    fromQueueMap = new HashMap<String,String>();
+                    fromQueueMap.put("group", map.get("ENTRY_GROUP"));
+                    fromQueueMap.put("website", map.get("ENTRY_WEBSITE"));
+                    fromQueueMap.put("channel", map.get("CHANNEL_NAME"));
+                    fromQueueMap.put("channel_url", map.get("CHANNEL_URL"));
+                    fromQueueMap.put("encoding", map.get("ENTRY_ENCODING"));
+                    fromQueueMap.put("jsoup_url_regex", map.get("ENTRY_JSOUP_URLS"));
+                    fromQueueMap.put("jsoup_title", map.get("PAGE_JSOUP_TITLE"));
+                    fromQueueMap.put("jsoup_content", map.get("PAGE_JSOUP_CONTENT"));
+                    
+                    String json = JSONObject.fromObject(fromQueueMap).toString();
+                    logger.info("json: \n{}\n",json);
+                    redisDAO.leftPush(QUEUE_NAME_TO, json);
+                    logInfo();
 
 	            }
 

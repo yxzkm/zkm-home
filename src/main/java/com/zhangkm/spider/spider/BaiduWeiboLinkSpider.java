@@ -14,16 +14,21 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zhangkm.spider.util.RedisUtil;
 import com.zhangkm.spider.util.UrlResponse;
 import com.zhangkm.spider.checker.BDBUtil;
 import com.zhangkm.spider.frame.G;
 import com.zhangkm.spider.frame.QueueThread;
+import com.zhangkm.spider.frame.RedisDAO;
 import com.zhangkm.spider.frame.TaskThread;
 import com.zhangkm.spider.util.Common;
 
 public class BaiduWeiboLinkSpider extends QueueThread {
+    @Autowired
+    protected RedisDAO redisDAO;
+
 	/*
 	private String[] keyString = {
 			"湖北","九头鸟",
@@ -150,13 +155,17 @@ public class BaiduWeiboLinkSpider extends QueueThread {
 	}
 
 	public class UrlSpiderThread extends TaskThread{
-		public void run() {
+        @Override
+        protected void getDataFromQueueMap() {
+            fromQueueMap = redisDAO.rightPop(QUEUE_NAME_FROM);
+        }           
+
+	    public void run() {
 			if(!initQueue()) return;
 			doMainJob();
 		}
 
 		protected boolean initQueue() {
-			super.logger = Logger.getLogger(taskName);
 			super.QUEUE_NAME_TO = G.QUEUE_BASIC_FILTER;
 			return true;
 		}
@@ -197,7 +206,7 @@ public class BaiduWeiboLinkSpider extends QueueThread {
 			}
 
 			// 访问该页面，获取帖子列表
-			UrlResponse urlResponse = Common.getUrlResponseTimes(channel_url,G.HTTP_CLIENT);
+			UrlResponse urlResponse = Common.getUrlResponseTimes(channel_url,null);
 			if(urlResponse==null) return retList;
 			
 			String bodyString = urlResponse.getResponseBody();
