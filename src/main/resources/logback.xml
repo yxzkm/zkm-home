@@ -83,6 +83,15 @@
 		</encoder>   
 	</appender>   
 
+	<appender name="jms" class="ch.qos.logback.classic.net.JMSQueueAppender">  
+		<InitialContextFactoryName>  
+			org.apache.activemq.jndi.ActiveMQInitialContextFactory  
+		</InitialContextFactoryName>  
+		<ProviderURL>tcp://127.0.0.1:61616</ProviderURL>  
+		<QueueConnectionFactoryBindingName>ConnectionFactory</QueueConnectionFactoryBindingName>  
+		<QueueBindingName>myqueue</QueueBindingName>  
+	</appender>  
+
 
     <!-- 
     	logger简介：
@@ -107,6 +116,7 @@
     		appender-ref子节点：可以包含多个，用于引用appender节点
     -->
     <root level="info">  
+        <appender-ref ref="jms" />  
         <appender-ref ref="stdout" />  
     </root>  
 
