@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+<title>QRCode二维码Base64测试页面</title>
+</head>
+
+<body onload="load()">
+<img src="/i/eg_mouse.jpg" width="128" height="128" />
+</body>
+
+<script type="text/javascript">
+(function() {window.qrcode = {
+		
+		load: function(json){
+			var picPreviewDiv = document.getElementById("picPreviewDiv");
+			for (var i=0;i<json.length;i++){
+				var imgBoxNode = document.createElement("div");
+				imgBoxNode.setAttribute("id", "picPreviewImgBox_"+i);
+				imgBoxNode.setAttribute("class", "picPreviewImgBox");
+
+				var imgNode = document.createElement("img");
+				imgNode.setAttribute("id", "picPreviewImg_"+i);
+				imgNode.setAttribute("class", "picPreviewImg");
+				imgNode.setAttribute("src", "http://p.zhangkm.com/photo/"+json[i].member+"_thumb.jpg");
+				console.log("http://p.zhangkm.com/photo/"+json[i].member+"_thumb.jpg");
+				imgBoxNode.appendChild(imgNode);
+				
+				picPreviewDiv.insertBefore(imgBoxNode, picPreviewDiv.childNodes[0]);
+			}
+			var picUploadButtonDiv = document.getElementById("picUploadButtonDiv");
+			picUploadButtonDiv.setAttribute("class", "");
+		},
+		
+		getImageData: function(){
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange=function(){
+				if (xhr.readyState==4 && xhr.status==200){
+					var json = JSON.parse(xhr.responseText);
+					loadImage.load(json);
+				}
+			}
+			xhr.open("GET", "/fileUpload/getLatestTop9Photos",true);  
+			xhr.send(null);
+		}
+	}})();
+
+	function load(){
+		qrcode.show();
+	}
+
+</script>
+
+</html>
