@@ -16,6 +16,7 @@ public abstract class TaskThread extends Thread{
 
 	protected Map<String, String> fromQueueMap;
 	
+	@Override
 	public void run() {
 		if(!initQueue()) return;
 		getDataFromQueueMap();
