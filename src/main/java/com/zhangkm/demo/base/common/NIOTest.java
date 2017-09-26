@@ -29,20 +29,20 @@ public class NIOTest {
 		}
 		while (bytesRead != -1) {
 
-		System.out.println("Read " + bytesRead);
-		buf.flip();
-
-		while(buf.hasRemaining()){
-		System.out.print((char) buf.get());
-		}
-
-		buf.clear();
-		try {
-			bytesRead = inChannel.read(buf);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    		System.out.println("Read " + bytesRead);
+    		buf.flip();
+    
+    		while(buf.hasRemaining()){
+    		System.out.print((char) buf.get());
+    		}
+    
+    		buf.clear();
+    		try {
+    			bytesRead = inChannel.read(buf);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
 		}
 		try {
 			aFile.close();

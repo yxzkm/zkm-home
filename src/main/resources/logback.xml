@@ -83,6 +83,7 @@
 		</encoder>   
 	</appender>   
 
+	<!-- 基于ActiveMQ的appender -->
 	<appender name="jms" class="ch.qos.logback.classic.net.JMSQueueAppender">  
 		<InitialContextFactoryName>  
 			org.apache.activemq.jndi.ActiveMQInitialContextFactory  
@@ -92,6 +93,23 @@
 		<QueueBindingName>myqueue</QueueBindingName>  
 	</appender>  
 
+	<!-- 基于AMQP的appender -->
+	<appender name="AMQP" class="org.springframework.amqp.rabbit.logback.AmqpAppender">
+		<layout>
+			<pattern>[%d{MM-dd HH:mm:ss}][%p] %m [%logger{0}:%line] %n</pattern>
+		</layout>
+		<applicationId>amqp-test</applicationId>
+		<routingKeyPattern>log-test</routingKeyPattern>
+		<generateId>true</generateId>
+		<charset>UTF-8</charset>
+		<durable>true</durable>
+		<exchangeType>direct</exchangeType>
+		<host>192.168.1.10</host>
+		<port>5670</port>
+		<username>admin</username>
+		<password>admin</password>
+		<exchangeName>log</exchangeName>
+	</appender>
 
     <!-- 
     	logger简介：
