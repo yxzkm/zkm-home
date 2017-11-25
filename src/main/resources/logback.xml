@@ -134,7 +134,6 @@
     		appender-ref子节点：可以包含多个，用于引用appender节点
     -->
     <root level="info">  
-        <appender-ref ref="jms" />  
         <appender-ref ref="stdout" />  
     </root>  
 
