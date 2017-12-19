@@ -264,7 +264,12 @@
 		    <version>3.3.0</version>
 		</dependency>
 		
-		
+		<!-- API网关 SpringCloud zuul -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-zuul</artifactId>
+			<version>1.4.0.RELEASE</version>
+		</dependency>		
 		
 	</dependencies>
 

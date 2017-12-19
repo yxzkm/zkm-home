@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 //当需要重新定义资源所在目录时，则需要主动添加配置类，并且Override addResourceHandlers方法。
 @Controller
 @SpringBootApplication
+@EnableZuulProxy
 public class Application extends WebMvcConfigurerAdapter{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
